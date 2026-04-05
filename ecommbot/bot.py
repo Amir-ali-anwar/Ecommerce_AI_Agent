@@ -1,3 +1,4 @@
+import logging
 import os
 from dotenv import load_dotenv
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -10,20 +11,21 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_astradb import AstraDBVectorStore, AstraDBChatMessageHistory
 
-import os
-import logging
-from dotenv import load_dotenv
-
 logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
 
-# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")    
 ASTRA_DB_API_ENDPOINT = os.getenv("ASTRA_DB_API_ENDPOINT")
 ASTRA_DB_APPLICATION_TOKEN = os.getenv("ASTRA_DB_APPLICATION_TOKEN")
 ASTRA_DB_KEYSPACE = os.getenv("ASTRA_DB_KEYSPACE")
+
+# Production sanity check for environment variables
+_REQUIRED_VARS = ["GOOGLE_API_KEY", "ASTRA_DB_API_ENDPOINT", "ASTRA_DB_APPLICATION_TOKEN", "ASTRA_DB_KEYSPACE"]
+_missing = [v for v in _REQUIRED_VARS if not os.getenv(v)]
+if _missing:
+    raise EnvironmentError(f"Missing required environment variables: {', '.join(_missing)}. Please check your .env file.")
 
 
 class EcommChatBot:
@@ -38,7 +40,7 @@ class EcommChatBot:
         self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
         
         # LLM
-        self.llm = ChatGoogleGenerativeAI(model="gemini-flash-latest", temperature=0.2, max_output_tokens=200)
+        self.llm = ChatGoogleGenerativeAI(model="gemini-flash-latest", temperature=0.3, max_output_tokens=800)
 
         # Vector database
         self.vstore = AstraDBVectorStore(
@@ -85,9 +87,11 @@ class EcommChatBot:
 
         # Prompt to answer user questions using retrieved context and history
         qa_prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are Aura AI, a professional electronics assistant. "
-                       "Provide direct, helpful answers in 2 sentences maximum."
-                       "No fluff or polite intros. If the answer isn't in the context, say 'Information not found.'\n\n"
+            ("system", "You are Aura AI, a friendly and professional electronics assistant. "
+                       "Provide a precise and helpful response based on the Context and Chat History. "
+                       "Your response MUST be between 250 and 300 words. "
+                       "Ensure all sentences are completed and that you conclude your message naturally within this limit. "
+                       "If information is missing, state it clearly and compactly.\n\n"
                        "Context:\n{context}"),
             MessagesPlaceholder(variable_name="chat_history"),
             ("human", "{input}")

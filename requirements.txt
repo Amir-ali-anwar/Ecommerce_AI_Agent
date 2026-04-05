@@ -1,6 +1,6 @@
 langchain-astradb
 langchain
-langchain-openai
+langchain-google-genai
 python-dotenv
 flask
 pandas
