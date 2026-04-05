@@ -1,0 +1,8 @@
+langchain-astradb
+langchain
+langchain-openai
+python-dotenv
+flask
+pandas
+langchain-huggingface
+sentence-transformers

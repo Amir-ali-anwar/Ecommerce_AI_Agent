@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura | Premium AI Assistant</title>
+    <!-- Modern Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <div class="chat-wrapper">
+        <header class="chat-header">
+            <div class="bot-info">
+                <div class="bot-avatar">
+                   <i class="fa-solid fa-robot"></i>
+                </div>
+                <div>
+                    <h2>Aura AI</h2>
+                    <span class="status">Online <span class="pulse-dot"></span></span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn tooltip" data-tooltip="Clear Chat" onclick="clearChat()">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="chat-body" id="chatBody">
+            <div class="message bot">
+                <div class="bubble">
+                    Hi! I'm Aura. I specialize in electronics and audio tech reviews. Ask me anything about finding the perfect headset!
+                </div>
+            </div>
+        </main>
+
+        <footer class="chat-footer">
+            <form id="chatForm">
+                <input type="text" id="userInput" placeholder="Ask about bass, battery life, or price..." autocomplete="off"/>
+                <button type="submit" id="sendBtn">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
