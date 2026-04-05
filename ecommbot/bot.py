@@ -10,6 +10,12 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_astradb import AstraDBVectorStore, AstraDBChatMessageHistory
 
+import os
+import logging
+from dotenv import load_dotenv
+
+logger = logging.getLogger(__name__)
+
 # Load environment variables
 load_dotenv()
 
@@ -26,7 +32,7 @@ class EcommChatBot:
         Initializes the LLM, the Vector Database connection, and builds
         a conversational RAG chain that remembers past chat history.
         """
-        print("Initializing the AI and linking to AstraDB...")
+        logger.info("Initializing the AI and linking to AstraDB...")
 
         # Embeddings
         self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
@@ -114,9 +120,7 @@ class EcommChatBot:
             )
             answer = response["answer"]
         except Exception as e:
-            import traceback
-            print(f"Error in bot.ask: {e}")
-            traceback.print_exc()
+            logger.error("Error in bot.ask", exc_info=True)
             answer = "Sorry, something went wrong. Let's try again."
 
         return answer

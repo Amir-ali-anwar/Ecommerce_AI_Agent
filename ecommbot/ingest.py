@@ -7,10 +7,14 @@ from langchain_astradb import AstraDBVectorStore
 from langchain_huggingface import HuggingFaceEmbeddings
 
 
+import logging
+
 load_dotenv()
 
+# Configure logging for direct execution
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 ASTRA_DB_API_ENDPOINT = os.getenv("ASTRA_DB_API_ENDPOINT")
 ASTRA_DB_APPLICATION_TOKEN = os.getenv("ASTRA_DB_APPLICATION_TOKEN")
 ASTRA_DB_KEYSPACE = os.getenv("ASTRA_DB_KEYSPACE")
@@ -22,16 +26,16 @@ def load_and_chunk_data(csv_path):
     This is much better than treating every 5-word review as a separate document!
     """
 
-    print(f'Loading data from {csv_path}')
+    logger.info(f'Loading data from {csv_path}')
     df = pd.read_csv(csv_path)
-    print(f'Loaded {len(df)} rows')
+    logger.info(f'Loaded {len(df)} rows')
 
     # Aggregate reviews by product
     aggregated_data = (
     df.groupby(['product_id', 'product_title'])['review']
       .apply(lambda x: ' '.join(str(v) for v in x))
       .reset_index())
-    print(f'Aggregated to {len(aggregated_data)} products')
+    logger.info(f'Aggregated to {len(aggregated_data)} products')
 
     # Convert to LangChain Documents
     documents = []
@@ -48,7 +52,7 @@ def load_and_chunk_data(csv_path):
     print(f'Created {len(documents)} documents')
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     split_docs = text_splitter.split_documents(documents)
-    print(f'Split into {len(split_docs)} chunks')
+    logger.info(f'Split into {len(split_docs)} chunks')
     return split_docs
 
 
@@ -82,7 +86,7 @@ if __name__ == '__main__':
     documents = load_and_chunk_data(csv_path)
     
     # 2. Ingest
-    if OPENAI_API_KEY and ASTRA_DB_API_ENDPOINT:
+    if ASTRA_DB_API_ENDPOINT and ASTRA_DB_APPLICATION_TOKEN:
         ingest_to_astradb(documents)
     else:
-        print("API keys are missing! Make sure to fill out the .env file before ingesting.")
+        logger.error("AstraDB API Connection details are missing! Make sure to fill out the .env file.")

@@ -6,3 +6,5 @@ flask
 pandas
 langchain-huggingface
 sentence-transformers
+waitress
+gunicorn

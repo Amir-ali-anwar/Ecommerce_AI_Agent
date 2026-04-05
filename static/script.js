@@ -15,10 +15,9 @@ function scrollToBottom() {
 }
 
 function clearChat() {
-    const messages = chatBody.querySelectorAll('.message');
-    // Keep only the first welcome message
-    for (let i = 1; i < messages.length; i++) {
-        messages[i].remove();
+    if (confirm("Are you sure you want to clear the conversation? This will start a new session.")) {
+        localStorage.removeItem('aura_session_id');
+        window.location.reload();
     }
 }
 
