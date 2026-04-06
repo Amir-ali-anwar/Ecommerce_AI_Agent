@@ -40,7 +40,7 @@ class EcommChatBot:
         self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
         
         # LLM
-        self.llm = ChatGoogleGenerativeAI(model="gemini-flash-latest", temperature=0.3, max_output_tokens=800)
+        self.llm = ChatGoogleGenerativeAI(model="gemini-flash-latest", temperature=0.3, max_output_tokens=400)
 
         # Vector database
         self.vstore = AstraDBVectorStore(
